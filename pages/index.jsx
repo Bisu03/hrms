@@ -64,42 +64,6 @@ const index = () => {
 
         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
           <div className="flex flex-col gap-9">
-            {/* <!-- Basic Info --> */}
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
-              <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">
-                  Notices
-                </h3>
-              </div>
-              <div>
-                <div className="max-w-full overflow-x-auto">
-                  <table className="w-full table-auto">
-                    <thead>
-                      <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Title
-                        </th>
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Download/View
-                        </th>
-
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Published Date
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {NoticeList?.map((data, key) => (
-                        <Noticelist data={data} key={key} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-9">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
@@ -134,6 +98,43 @@ const index = () => {
               </div>
             </div>
           </div>
+          <div className="flex flex-col gap-9">
+
+            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
+              <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+                <h3 className="font-medium text-black dark:text-white">
+                  Notices
+                </h3>
+              </div>
+              <div>
+                <div className="max-w-full overflow-x-auto">
+                  <table className="w-full table-auto">
+                    <thead>
+                      <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                        <th className="px-4 py-4 font-medium text-black dark:text-white">
+                          Title
+                        </th>
+                        <th className="px-4 py-4 font-medium text-black dark:text-white">
+                          Download/View
+                        </th>
+
+                        <th className="px-4 py-4 font-medium text-black dark:text-white">
+                          Published Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {NoticeList?.map((data, key) => (
+                        <Noticelist data={data} key={key} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         </div>
       </DefaultLayout>
     </div>

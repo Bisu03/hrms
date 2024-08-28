@@ -4,7 +4,6 @@ import { connectDB } from "../../../../db/ConnectDB";
 import EmployeeModel from "../../../../models/employee.models";
 import UserModel from "../../../../models/user.models";
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
     const session = await getServerSession(req, res, authOptions);
 

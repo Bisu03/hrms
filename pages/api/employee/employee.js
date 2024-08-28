@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 import { getServerSession } from "next-auth";
 import bcrypt from "bcrypt";
 
@@ -68,11 +67,12 @@ export default async (req, res) => {
                         body: JSON.stringify({
                             from: process.env.NEXT_APP_USER_MAIL,
                             to: [req.body.employee_email],
-                            subject: 'HR LOGIN CREDIENTIAL',
+                            subject: 'CHECKUPHEALTH LOGIN CREDIENTIAL',
                             html: `
                             <p>*** please keep this information secret ***</p> <br/>
-                            Login & Employee ID - ${seqdata.seq}<br/>
-                            Password - ${user_pass}
+                            Login & Employee ID - ${seqdata?.seq}<br/>
+                            Password  - ${user_pass} <br/>
+                            Portal Link Address - https://emp.checkuphealth.in
                             `,
                         }),
                     });
@@ -102,7 +102,7 @@ export default async (req, res) => {
 
                 const skip = (pageNumber - 1) * pageSize;
 
-                const employees = await EmployeeModel.find(filter).populate("department").sort("-createdAt").skip(skip)
+                const employees = await EmployeeModel.find(filter,"profile employee_id employee_first_name employee_last_name employee_email department").populate("department").sort("-createdAt").skip(skip)
                     .limit(pageSize);
                 ;
                 const totalCount = await EmployeeModel.countDocuments(filter);

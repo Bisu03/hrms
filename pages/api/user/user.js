@@ -7,7 +7,6 @@ import { generateUniqueID } from "../../../utils/UniqueId";
 import { passGenerator } from "../../../utils/PassGenerate";
 import nodemailer from "nodemailer";
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
     const session = await getServerSession(req, res, authOptions);
 
@@ -36,8 +35,9 @@ export default async (req, res) => {
                     body: JSON.stringify({
                         from: process.env.NEXT_APP_USER_MAIL,
                         to: [req.body.employee_email],
-                        subject: 'HR LOGIN CREDIENTIAL',
-                        html: ` <p>*** please keep this information secret ***</p> <br/>
+                        subject: 'CHECKUPHEALTH LOGIN CREDIENTIAL',
+                        html: ` 
+                    <p>*** please keep this information secret ***</p> <br/>
                     Login & Employee ID - ${userid}<br/>
                     Password - ${user_pass}
                     `,

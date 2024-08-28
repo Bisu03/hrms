@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Spinner from "../components/ui/Spinner";
 import { BsEye } from "react-icons/bs";
 import Link from "next/link";
+import Image from "next/image";
 
 const SignIn = ({ session, csrfToken }) => {
   const router = useRouter();
@@ -31,9 +32,7 @@ const SignIn = ({ session, csrfToken }) => {
       toast.error("Enter crediential");
       return;
     }
-
     setLoading(true);
-
     try {
       const data = await signIn("credentials", {
         redirect: false,
@@ -186,10 +185,16 @@ const SignIn = ({ session, csrfToken }) => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              {/* <span className="mb-1.5 block font-medium">Start for free</span> */}
-              <h2 className="mb-9 text-2xl font-bold text-white sm:text-title-xl2">
-                Sign In to CUD ADMIN
-              </h2>
+              <div className="flex w-full justify-center py-2">
+
+                <Image
+                  width={80}
+                  height={80}
+                  src={"/images/logo/logo.png"}
+                  alt="Logo"
+                  priority
+                />
+              </div>
 
               <div>
                 <div className="mb-4">
@@ -293,7 +298,7 @@ const SignIn = ({ session, csrfToken }) => {
                   </button>
                 </div>
 
-             
+
 
                 <div className="mt-6 text-center">
                   <p>

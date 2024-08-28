@@ -1,25 +1,27 @@
-import React, { Suspense, useEffect, useState } from 'react'
-import Loader from '../../../components/ui/Loader/Loader';
-import Breadcrumb from '../../../components/ui/Breadcrumbs/Breadcrumb';
-import Image from 'next/image';
-import Link from 'next/link';
-import DefaultLayout from "../../../components/Layouts/DefaultLayout"
-import EmployeeForm from '../../../components/Form/EmployeeForm';
-import apiRequest from '../../../utils/apiRequest';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
-import { ErrorHandeling } from '../../../utils/Errorhandle';
-import { SuccessHandling } from '../../../utils/SuccessHandle';
-import AddDocument from '../../../components/Form/AddDocument';
-import SalaryComponent from '../../../components/Form/SalaryComponent';
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import Loader from "../../../components/ui/Loader/Loader";
+import Breadcrumb from "../../../components/ui/Breadcrumbs/Breadcrumb";
+import Image from "next/image";
+import Link from "next/link";
+import DefaultLayout from "../../../components/Layouts/DefaultLayout";
+import EmployeeForm from "../../../components/Form/EmployeeForm";
+import apiRequest from "../../../utils/apiRequest";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import QRCode from "react-qr-code";
+import { ErrorHandeling } from "../../../utils/Errorhandle";
+import { SuccessHandling } from "../../../utils/SuccessHandle";
+import AddDocument from "../../../components/Form/AddDocument";
+import SalaryComponent from "../../../components/Form/SalaryComponent";
+import html2canvas from 'html2canvas';
 
 const Employeedetails = () => {
-  const [Loading, setLoading] = useState(false)
-  const [PageLoading, setPageLoading] = useState(false)
-  const [Toggling, setToggling] = useState(1)
+  const [Loading, setLoading] = useState(false);
+  const [PageLoading, setPageLoading] = useState(false);
+  const [Toggling, setToggling] = useState(1);
 
-  const router = useRouter()
-  const { slug } = router.query
+  const router = useRouter();
+  const { slug } = router.query;
 
   // const [file, setFile] = useState(null);
   const [EmployeeData, setEmployeeData] = useState({
@@ -38,80 +40,80 @@ const Employeedetails = () => {
     salary: "",
     pan: "",
     bankinfo: {},
-    document: []
-  })
+    document: [],
+  });
 
   const [SalarySetup, setSalarySetup] = useState({
     baseSalary: "",
     additions: {},
     deductions: {},
-    grossSalary: ""
+    grossSalary: "",
   });
 
   const HandleToggle = (num) => {
-    setToggling(num)
-  }
+    setToggling(num);
+  };
 
   const HandlegetEmployee = async () => {
-
+    setPageLoading(true);
     try {
-      const { data } = await apiRequest.get(`/api/employee/details/${slug}`)
-      setEmployeeData(data)
-      setSalarySetup(data?.salarytype || {})
+      const { data } = await apiRequest.get(`/api/employee/details/${slug}`);
+      setEmployeeData({ ...data, department: data?.department?._id, department_name: data?.department?.name });
+      setSalarySetup(data?.salarytype || {});
+      setPageLoading(false);
     } catch (error) {
-      ErrorHandeling(error)
+      setPageLoading(false);
+      ErrorHandeling(error);
     }
-  }
-
+  };
 
   useEffect(() => {
-    HandlegetEmployee()
-  }, [slug])
-
-
+    HandlegetEmployee();
+  }, [slug]);
 
   const convertToBase64 = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
       if (reader.result) {
-        HandleUploadProfile(reader.result)
+        HandleUploadProfile(reader.result);
       }
     };
     reader.onerror = (error) => {
-      console.error('Error converting file to Base64:', error);
+      console.error("Error converting file to Base64:", error);
     };
   };
 
   const handleFileInputChange = async (event) => {
     const file = event.target.files[0];
-    convertToBase64(file)
+    convertToBase64(file);
   };
 
   const HandleUploadProfile = async (profiles) => {
-    setPageLoading(true)
+    setPageLoading(true);
     try {
-      await apiRequest.put(`/api/employee/details/${slug}`, { profile: profiles })
-      SuccessHandling("Profile Updated")
-      location.reload()
+      await apiRequest.put(`/api/employee/details/${slug}`, {
+        profile: profiles,
+      });
+      SuccessHandling("Profile Updated");
+      location.reload();
     } catch (error) {
-      ErrorHandeling(error)
+      ErrorHandeling(error);
     }
-  }
+  };
 
   const HandleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await apiRequest.put(`/api/employee/details/${slug}`, EmployeeData)
-      location.reload()
-      setLoading(false)
-      SuccessHandling("Information Updated")
+      await apiRequest.put(`/api/employee/details/${slug}`, EmployeeData);
+      location.reload();
+      setLoading(false);
+      SuccessHandling("Information Updated");
     } catch (error) {
-      setLoading(false)
-      ErrorHandeling(error)
+      setLoading(false);
+      ErrorHandeling(error);
     }
-  }
-
+  };
 
   const {
     isLoading,
@@ -126,60 +128,73 @@ const Employeedetails = () => {
   });
 
   useEffect(() => {
-    refetch()
-  }, [])
+    refetch();
+  }, []);
 
   const HandleSubmitSalary = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       await apiRequest.put(`/api/employee/details/${slug}`, {
-        salarytype: SalarySetup
-      })
-      location.reload()
-      setLoading(false)
-      SuccessHandling("Information Updated")
+        salarytype: SalarySetup,
+      });
+      location.reload();
+      setLoading(false);
+      SuccessHandling("Information Updated");
     } catch (error) {
-      setLoading(false)
-      ErrorHandeling(error)
+      setLoading(false);
+      ErrorHandeling(error);
     }
-  }
+  };
 
-  console.log(SalarySetup);
+
+  const handleDownloadImage = async () => {
+    const element = document.getElementById('print'); // Select the element by ID
+
+    if (element) {
+      const canvas = await html2canvas(element); // Capture the element as a canvas
+      const data = canvas.toDataURL('image/jpg'); // Convert the canvas to a data URL (JPEG format)
+      const link = document.createElement('a'); // Create a temporary anchor element
+
+      link.href = data; // Set the data URL as the href for the anchor
+      link.download = EmployeeData?.employee_id; // Set the desired download filename
+
+      document.body.appendChild(link); // Append the anchor to the document body
+      link.click(); // Programmatically click the anchor to trigger the download
+      document.body.removeChild(link); // Remove the anchor from the document
+    }
+  };
+
   return (
     <>
       <DefaultLayout>
-        {
-          PageLoading && <Loader />
-        }
+        {PageLoading && <Loader />}
         <Breadcrumb pageName="Employee Details" />
         <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark my-4">
-
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5 mt-24">
             <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-              <div className="relative drop-shadow-2">
-                <Image
-                  src={EmployeeData?.profile || "/profile.png"}
-                  width={160}
-                  height={160}
-                  style={{
-                    width: "auto",
-                    height: "auto",
-                  }}
-                  className='overflow-hidden object-cover rounded-full'
-                  alt="profile"
-                />
+              <div className="relative drop-shadow-2 ">
+                <div className="flex items-center justify-center w-full h-full">
+                  <div className="overflow-hidden rounded-full h-40 w-40">
+                    <Image
+                      src={EmployeeData?.profile || "/profile.png"}
+                      alt="Profile Picture"
+                      width={160} // Adjusted width to fit the container
+                      height={160} // Adjusted height to fit the container
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+
                 <label
                   htmlFor="profile"
-                  className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
-                >
+                  className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2">
                   <svg
                     className="fill-current"
                     width="14"
                     height="14"
                     viewBox="0 0 14 14"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                    xmlns="http://www.w3.org/2000/svg">
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
@@ -205,58 +220,75 @@ const Employeedetails = () => {
             </div>
             <div className="mt-4">
               <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-
                 <p className="font-medium">{EmployeeData?.employee_id}</p>
               </h3>
-              <p className="font-medium">{EmployeeData?.employee_first_name} {EmployeeData?.employee_last_name}</p>
-
+              <p className="font-medium">
+                {EmployeeData?.employee_first_name}{" "}
+                {EmployeeData?.employee_last_name}
+              </p>
 
               <div className="mx-auto max-w-180">
                 <h4 className="font-semibold text-black dark:text-white">
                   Address
                 </h4>
-                <p className="mt-4.5">
-                  {EmployeeData?.address}
-                </p>
+                <p className="mt-4.5">{EmployeeData?.address}</p>
               </div>
-
             </div>
           </div>
 
           <div className="flex flex-wrap w-full justify-evenly ">
-            {Toggling == 1 ? <button
-              onClick={() => HandleToggle(1)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Personal Details
-            </button> : <button
-              onClick={() => HandleToggle(1)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Personal Details
-            </button>}
-            {Toggling == 2 ? <button
-              onClick={() => HandleToggle(2)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Documents
-            </button> : <button
-              onClick={() => HandleToggle(2)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Documents
-            </button>}
-            {Toggling == 3 ? <button
-              onClick={() => HandleToggle(3)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Salary Setup
-            </button> : <button
-              onClick={() => HandleToggle(3)}
-              className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-            >
-              Salary Setup
-            </button>}
+            {Toggling == 1 ? (
+              <button
+                onClick={() => HandleToggle(1)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Personal Details
+              </button>
+            ) : (
+              <button
+                onClick={() => HandleToggle(1)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Personal Details
+              </button>
+            )}
+            {Toggling == 2 ? (
+              <button
+                onClick={() => HandleToggle(2)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Documents
+              </button>
+            ) : (
+              <button
+                onClick={() => HandleToggle(2)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Documents
+              </button>
+            )}
+            {Toggling == 3 ? (
+              <button
+                onClick={() => HandleToggle(3)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Salary Setup
+              </button>
+            ) : (
+              <button
+                onClick={() => HandleToggle(3)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                Salary Setup
+              </button>
+            )}
+            {Toggling == 4 ? (
+              <button
+                onClick={() => HandleToggle(4)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5  bg-slate-700 px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                ID Card
+              </button>
+            ) : (
+              <button
+                onClick={() => HandleToggle(4)}
+                className=" my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                ID Card
+              </button>
+            )}
 
             {/* <button
               className="my-2 inline-flex items-center justify-center gap-2.5 bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
@@ -266,16 +298,104 @@ const Employeedetails = () => {
           </div>
         </div>
 
-        {Toggling == 1 && <EmployeeForm EmployeeData={EmployeeData} setEmployeeData={setEmployeeData} HandleSubmit={HandleSubmit} Loading={Loading} />}
-        {Toggling == 2 && <AddDocument EmployeeData={EmployeeData} HandlegetEmployee={HandlegetEmployee} Loading={Loading} />}
-        {Toggling == 3 && <SalaryComponent SalarySetup={SalarySetup} SalaryTypes={SalaryTypes} setSalarySetup={setSalarySetup} EmployeeData={EmployeeData} HandleSubmitSalary={HandleSubmitSalary} />}
+        {Toggling == 1 && (
+          <EmployeeForm
+            EmployeeData={EmployeeData}
+            setEmployeeData={setEmployeeData}
+            HandleSubmit={HandleSubmit}
+            Loading={Loading}
+          />
+        )}
+        {Toggling == 2 && (
+          <AddDocument
+            EmployeeData={EmployeeData}
+            HandlegetEmployee={HandlegetEmployee}
+            Loading={Loading}
+          />
+        )}
+        {Toggling == 3 && (
+          <SalaryComponent
+            SalarySetup={SalarySetup}
+            SalaryTypes={SalaryTypes}
+            setSalarySetup={setSalarySetup}
+            EmployeeData={EmployeeData}
+            HandleSubmitSalary={HandleSubmitSalary}
+          />
+        )}
+        {Toggling == 4 && (
+          <>
+            <div id="print" className="capture-element flex justify-evenly w-full bg-white p-4" >
+              <div className="relative">
+                <div className=" w-full absolute justify-center align-middle top-30">
+                  <div>
+                    <div className="flex items-center justify-center w-full h-full">
+                      <div className="overflow-hidden rounded-full h-36 w-36 border-4 border-stone-100">
+                        <Image
+                          src={EmployeeData?.profile || "/profile.png"}
+                          alt="Profile Picture"
+                          width={160} // Adjusted width to fit the container
+                          height={160} // Adjusted height to fit the container
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
 
+                    <div className="mt-2">
+                      <h1 className="text-black text-center text-3xl font-medium uppercase">
+                        {EmployeeData?.employee_first_name} <br />
+                        {EmployeeData?.employee_last_name}
+                      </h1>
+                    </div>
+                    <div className="mt-2">
+                      <h1 className="text-black text-center text-base font-medium uppercase">
+                        {EmployeeData?.department_name}
+                      </h1>
+                    </div>
+                    <div className="mt-5 w-full flex justify-center">
+                      <div className="flex items-center justify-center  bg-gray-100">
+                        {/* <div className="p-2 bg-white rounded-lg border-4 border-dashed border-blue-500"> */}
+                          <QRCode
+                            size={60}
+                            value={`emp.checkuphealth.in/employee/details/${EmployeeData?.employee_id}`}
+                            viewBox={`0 0 60 60`}
+                          />
+                        {/* </div> */}
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <h1 className="text-black text-center text-base font-medium uppercase">
+                        ID {EmployeeData?.employee_id}
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+                <Image
+                  src="/idfront.jpg"
+                  width={300}
+                  height={300}
+                  alt="profile"
+                />
+              </div>
+              <div>
+                <Image
+                  src="/idback.jpg"
+                  width={300}
+                  height={300}
+                  alt="profile"
+                />
+              </div>
 
+            </div>
+
+            <button onClick={handleDownloadImage} className="mt-4 p-2 bg-blue-500 text-white flex justify-center w-full">
+              Download ID Card
+            </button>
+          </>
+        )}
       </DefaultLayout>
-
     </>
-  )
-}
+  );
+};
 
-Employeedetails.adminRoute = true
-export default Employeedetails
+Employeedetails.adminRoute = true;
+export default Employeedetails;

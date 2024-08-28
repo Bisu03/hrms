@@ -3,13 +3,14 @@ import bcrypt from "bcrypt";
 import { authOptions } from "../../auth/[...nextauth]";
 import { connectDB } from "../../../../db/ConnectDB";
 import UserModel from "../../../../models/user.models";
-
 // import { generateUniqueID } from "../../../utils/UniqueId";
 // import { passGenerator } from "../../../utils/PassGenerate";
-// eslint-disable-next-line import/no-anonymous-default-export
+
 export default async (req, res) => {
     const session = await getServerSession(req, res, authOptions);
+
     if (session) {
+
         if (req.method === "GET") {
             connectDB();
             try {

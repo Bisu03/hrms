@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from "uuid";
 import { passGenerator } from "../../../../utils/PassGenerate";
 // import { generateUniqueID } from "../../../utils/UniqueId";
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default async (req, res) => {
     const session = await getServerSession(req, res, authOptions);
 
@@ -34,7 +33,7 @@ export default async (req, res) => {
                     body: JSON.stringify({
                         from: process.env.NEXT_APP_USER_MAIL,
                         to: [email],
-                        subject: "HR OTP",
+                        subject: "CHECKUPHEALTH OTP",
                         html: ` 
                         <p>*** please keep this information secret ***</p> <br/>
                         Employee ID - ${user?.employee_id}<br/>
