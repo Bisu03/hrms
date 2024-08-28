@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Noticelist from "../components/Table/Noticelist";
 
-const index = () => {
+const Home = () => {
   const { data: session } = useSession();
 
 
@@ -49,9 +49,9 @@ const index = () => {
         return res.data;
       }),
   });
+
   useEffect(() => {
     if (session?.user?.empobj_id) {
-
       refetch()
     }
   }, [session])
@@ -98,37 +98,20 @@ const index = () => {
               </div>
             </div>
           </div>
+
           <div className="flex flex-col gap-9">
 
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
               <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
-                  Notices
+                  Latest Notices
                 </h3>
               </div>
               <div>
                 <div className="max-w-full overflow-x-auto">
-                  <table className="w-full table-auto">
-                    <thead>
-                      <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Title
-                        </th>
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Download/View
-                        </th>
-
-                        <th className="px-4 py-4 font-medium text-black dark:text-white">
-                          Published Date
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {NoticeList?.map((data, key) => (
-                        <Noticelist data={data} key={key} />
-                      ))}
-                    </tbody>
-                  </table>
+                  {NoticeList?.map((data, key) => (
+                    <Noticelist data={data} key={key} />
+                  ))}
                 </div>
               </div>
             </div>
@@ -141,5 +124,5 @@ const index = () => {
   );
 };
 
-index.adminRoute = true;
-export default index;
+Home.adminRoute = true;
+export default Home;

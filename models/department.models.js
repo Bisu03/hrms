@@ -6,6 +6,7 @@ const departmentSchema = new mongoose.Schema({
     },
     permission: {
         type: Array
-    }
+    },
+    parentDepartments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Department', default: [] }],
 })
 export default mongoose.models.Department || mongoose.model("Department", departmentSchema);

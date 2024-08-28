@@ -5,7 +5,6 @@ const nextConfig = {
     domains: ['www.business2community.com', 'images.unsplash.com'],
   },
 
-
 }
 
 module.exports = nextConfig

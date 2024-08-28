@@ -32,6 +32,9 @@ const Forgotpass = () => {
         if (Employee.password != Employee.confirmpass) {
             return toast.error("Password not match");
         }
+        if (Employee.password.length < 6 ) {
+            return toast.error("Password Must be more than 6 character");
+        }
         setLoading(true);
         try {
             const { data } = await apiRequest.put(`/api/user/resetpass/${id}`, Employee);

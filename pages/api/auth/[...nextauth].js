@@ -21,7 +21,7 @@ export const authOptions = {
                 const user = await UserModel.findOne({ employee_id: empid });
                 if (!user) throw new Error("No user found");
 
-                const isCorrectPass = await bcrypt.compare(password, user.password);
+                const isCorrectPass = await bcrypt.compare(password?.toString(), user?.password?.toString());
                 if (isCorrectPass) {
                     const { password, ...info } = user._doc;
                     return info;

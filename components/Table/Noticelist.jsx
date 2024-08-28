@@ -24,31 +24,32 @@ const Noticelist = ({ data }) => {
 
     return (
         <>
-            <tr key={data._id}>
-                <td className="border-b border-[#eee] px-4 py-5  w-90">
-                    {data.title}
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5  ">
-                    <p
-                        className="text-black dark:text-white link cursor-pointer"
-                        onClick={() => handleDownload(data.url)}>
-                        {data.url ? " Download/View" : "No Document Available"}
-                    </p>
-                </td>
-                <td className="border-b border-[#eee] px-4 py-5 ">
 
-                    <p
-                        className="text-black dark:text-white link cursor-pointer flex"
-                    >
-                        {FormateDate(data.date)}{" "}
-                        {compareDates(data.date) ? (
-                            <MdFiberNew className={`ml-3 h-6 w-6 ${colorClass}`} />
-                        ) : undefined}
+            <div key={data._id} className={`py-8 px-4  border rounded-lg dark:border-strokedark dark:bg-boxdark  my-2 `}>
+                <div className="h-full flex items-start">
+                    <div className="flex-grow pl-6">
+                        <h2 className="tracking-widest text-xs title-font font-medium text-indigo-500 mb-1">
+                            {FormateDate(data.date)}{" "}
+                            {compareDates(data.date) ? (
+                                <MdFiberNew className={`ml-3 h-6 w-6 ${colorClass}`} />
+                            ) : undefined}
+                        </h2>
+                        <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
+                            {" "}
+                            {data.title}
+                        </h1>
+                        <div className="flex w-full ">
+                            <div className="text-blue-400 text-xs font-medium me-2 p-2 rounded   border border-blue- flex items-center">
+                                {data.url ? " Download/View" : "No Document Available"}
+                            </div>
+                        </div>
+                    </div>
 
-                    </p>
+                </div>
 
-                </td>
-            </tr>
+            </div>
+
+
         </>
     );
 };
